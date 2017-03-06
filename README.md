@@ -19,5 +19,5 @@ A task was configured to run every 15 seconds that would read the count of the c
 
 In retrospect, it may have been better to use a single sorted set in Redis, with the sort value being time and the set key being the authentication token. It would then be possible to query the sorted set for the count of any given window period (e.g. 1 minute, 5 minute, 15 minute, etc.). However, additional maintenance would be required to purge older keys periodically, otherwise the set would grow unbounded.
 
-———
+---
 Copyright © 2017 Sky Schulz. All rights reserved.
