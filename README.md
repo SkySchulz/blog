@@ -1,9 +1,9 @@
 #Stateless REST Services and Real-Time Concurrent User Metrics
 Sky Schulz, March 6 2017
 
-In the remaining weeks leading up to launch, the product owner asked the team when the concurrent user metrics dashboard would be ready, to which we responded "uh, we'll get right on that". This was a surprise request that had not been previously reviewed or scoped. I volunteered to sort the details, while the rest of the team worked on fine tuning and last minute bug fixes of existing services.
+In the remaining weeks leading up to launch, the product owner asked the team when the concurrent user metrics dashboard would be ready, to which we responded "uh, we'll get right on that". This was a surprise request that had not been previously reviewed or scoped, yet would provide very useful insight for the services team, the product owner, and the executive staff. I volunteered to sort the details, while the rest of the team worked on fine tuning and last minute bug fixes of existing services.
 
-Luckily, there was already some tooling in place that could be leveraged with, hopefully, not too much effort: authentication tokens. A unique identifier present in virtually every service request.
+Luckily, there was already some tooling in place that could be leveraged with, hopefully, not too much effort: authentication tokens. A unique identifier present in virtually every service request between the client and the service layer.
 
 The service layer is a stateless, JSON over HTTP, remote procedure call, multi-tenant, shared service architecture, with a proprietary sub-protocol. Written in PHP and running on a fleet of Linux virtual machines, with nginx providing HTTP termination and FastCGI routing, the service layer is backed by a cache cluster in Redis, and persistence cluster in MongoDB.
 
@@ -17,7 +17,7 @@ I added a new class, Capacity, for mediating the token sampling and metrics publ
 
 The Capacity class also provided a simple API to publish the metrics of the current, and preceding Observed Sample Sets. Given a 0-based index, n, it would read the size of the nth (0 == current set, 1 == previous set, ...) Observed Sample Set from Redis, and publish it to Elasticsearch.
 
-I then modified the common authentication validation path, integrating the sampling function of the Capacity class at both authentication and authorization phases. Capturing tokens at initial creation and  helped ensure the broadest coverage in the sample set.
+I then modified the common authentication validation path, integrating the sampling function of the Capacity class at both authentication and authorization phases. Capturing tokens at initial creation helped ensure the broadest coverage in the sample set.
 
 A task was configured to run every 15 seconds that would call the publish operation of the Capacity class for the current (in-progress) and previous (complete) Observed Sample Sets. 
 
